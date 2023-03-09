@@ -1,0 +1,105 @@
+import time
+
+import pygame
+import random
+import numpy as np
+
+pygame.init()
+pygame.font.init()
+
+white = (255, 255, 255)
+black = (0, 0, 0)
+red = (213, 50, 80)
+green = (0, 255, 0)
+blue = (50, 153, 213)
+
+c = list(np.random.choice(range(255), size=3))
+l = ''
+clicked = ''
+
+dis_width = 600
+dis_height = 400
+
+dis = pygame.display.set_mode((dis_width, dis_height))
+pygame.display.set_caption('Snake')
+
+dis.fill(black)
+
+font_style = pygame.font.SysFont("monoscript", 60)
+score_font = pygame.font.SysFont("monoscript", 35)
+textTBD = pygame.font.SysFont("monoscript", 25)
+
+# Trivia questions and answers
+trivia = [    {        "question": "What is the largest organ in the human body?",        "options": [            "Heart",            "Liver",            "Skin",            "Lung"        ],
+        "answer": "Skin"
+    },
+    {
+        "question": "What is the smallest country in the world by land area?",
+        "options": [
+            "Monaco",
+            "Nauru",
+            "Tuvalu",
+            "Vatican City"
+        ],
+        "answer": "Vatican City"
+    },
+    {
+        "question": "What is the currency of Japan?",
+        "options": [
+            "Yuan",
+            "Yen",
+            "Rupee",
+            "Won"
+        ],
+        "answer": "Yen"
+    },
+    {
+        "question": "Which planet is known as the Red Planet?",
+        "options": [
+            "Mars",
+            "Venus",
+            "Jupiter",
+            "Saturn"
+        ],
+        "answer": "Mars"
+    }
+]
+
+current_question = 0
+
+running = True
+
+while running:
+    mesg = font_style.render("EDUSNAKE", True, white)
+    dis.blit(mesg, (185, 180))
+    mesg = textTBD.render("Press Space to Continue", True, white)
+    dis.blit(mesg, (225, 225))
+    pygame.display.update()
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                while running:
+                    dis.fill(c)
+                    question = trivia[current_question]["question"]
+                    options = trivia[current_question]["options"]
+                    mesg = font_style.render(question, True, white)
+                    dis.blit(mesg, (10, 100))
+                    option_rects = []
+                    for i, option in enumerate(options):
+                        option_rect = pygame.draw.rect(dis, red, [75 + i * 200, 250, 50, 50])
+                        mesg = textTBD.render(option, True, white)
+                        dis.blit(mesg, (90 + i * 200, 265))
+                        option_rects.append(option_rect)
+                    pygame.display.update()
+
+                    for event in pygame.event.get():
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            for i, option_rect in enumerate(option_rects):
+                                if option_rect.collidepoint(event.pos):
+                                    clicked = options[i]
+                            if clicked == trivia[current_question]["answer"]:
+                                dis.fill(black)
+                                mesg = textTBD.render("Well done", True, white)
+                                dis.blit(mesg, (150, 200))
+                                pygame.display.update()
+                                time.sleep(1)
