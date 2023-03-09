@@ -1,0 +1,141 @@
+import pygame
+
+pygame.init()
+
+width = 1000
+height = 600
+
+display = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Street fighter")
+
+bg_image = pygame.image.load('C:/Users/adm/PycharmProjects/pythonProject/venv/imaze.gif').convert_alpha()
+
+x1 = 200
+y1 = display.get_height() - 200
+x2 = 700
+y2 = display.get_height() - 200
+
+fps = 5
+f = 120
+gravity = 5
+attack = False
+clock = pygame.time.Clock()
+
+move_left = False
+move_right = False
+move_up = False
+jump = False
+jumpCount = 10
+h1 = 0
+h2 = 0
+health1 = 200 - h1
+health2 = 200 - h2
+
+health_bar_width = 200
+health_bar_height = 20
+
+z1 = pygame.draw.rect(display, (0, 255, 0), pygame.Rect((x1 + 70, y1, 70, 150)))
+z2 = pygame.draw.rect(display, (0, 255, 0), pygame.Rect((x2 - 70, y1, 70, 150)))
+
+
+def bg():
+    scaled_bg = pygame.transform.scale(bg_image, (width, height))
+    display.blit(scaled_bg, (0, 0))
+
+
+def fighter1():
+    pygame.draw.rect(display, (255, 0, 0), pygame.Rect(x1, y1, 70, 150))
+
+
+def fighter2():
+    pygame.draw.rect(display, (255, 0, 0), pygame.Rect(x2, y2, 70, 150))
+
+
+def draw_health_bar1(display, x, y, health):
+    health_bar_width = int(health - h1)
+    pygame.draw.rect(display, (0, 0, 0), [x, y, 200, health_bar_height])
+    pygame.draw.rect(display, (0, 0, 255), [x, y, health_bar_width, health_bar_height])
+
+
+def draw_health_bar2(display, x, y, health):
+    health_bar_width = int(health - h2)
+    pygame.draw.rect(display, (0, 0, 0), [x, y, 200, health_bar_height])
+    pygame.draw.rect(display, (0, 0, 255), [x, y, health_bar_width, health_bar_height])
+
+
+run = True
+
+while run:
+
+    clock.tick(f)
+
+    bg()
+
+    fighter1()
+    fighter2()
+
+    draw_health_bar1(display, 0, 0, health1)
+    draw_health_bar2(display, 800, 0, health2)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                move_right = True
+            if event.key == pygame.K_d:
+                move_left = True
+            if event.key == pygame.K_w:
+                move_up = True
+            if event.key == pygame.K_SPACE and x1 < x2:
+                z1 = pygame.draw.rect(display, (0, 255, 0),
+                                      pygame.Rect((x1 + 70, y1, 70, 150)))  # otocit postavicku do druheho smeru
+            elif event.key == pygame.K_SPACE and x1 > x2:
+                z1 = pygame.draw.rect(display, (0, 255, 0), pygame.Rect((x1 - 70, y1, 70, 150)))
+            if event.key == pygame.K_p and x2 > x1:
+                z2 = pygame.draw.rect(display, (0, 255, 0), pygame.Rect((x2 - 70, y1, 70, 150)))
+            elif event.key == pygame.K_p and x2 < x1:
+                z2 = pygame.draw.rect(display, (0, 255, 0), pygame.Rect((x2 + 70, y1, 70, 150)))
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_a:
+                move_right = False
+            if event.key == pygame.K_d:
+                move_left = False
+            if event.key == pygame.K_w:
+                move_up = False
+    if move_right and x1 > fps:
+        x1 -= fps
+    if move_left and x1 < width - fps:
+        x1 += fps
+    if not jump:
+        if move_up and y1 > fps:
+            y1 -= 50
+            jump = True
+    else:
+        if jumpCount >= -10:
+            neg = 1
+            if jumpCount < 0:
+                neg = -1
+            y1 -= (jumpCount ** 2) * 0.5 * neg
+            jumpCount -= 1
+        else:
+            y1 = display.get_height() - 200
+            jump = False
+            jumpCount = 10
+
+    if (pygame.Rect(x1, y1, 70, 150)).colliderect(pygame.Rect(x2, y2, 70, 150)):
+        move_left = False
+
+    if (pygame.Rect(x2, y2, 70, 150)).colliderect(pygame.Rect(x1, y1, 70, 150)):
+        move_right = False
+
+    if z1.colliderect(z2):
+        attack = True
+        i = 0
+        while i < 1:
+            h2 += 10
+            break
+
+        pygame.display.update()
+
+    pygame.display.update()
