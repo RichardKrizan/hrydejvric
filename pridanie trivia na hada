@@ -1,0 +1,38 @@
+question_index = random.randint(0, len(trivia) - 1)
+question = trivia[question_index]["question"]
+options = trivia[question_index]["options"]
+answer = trivia[question_index]["answer"]
+
+while running:
+    # Display the trivia question and options
+    dis.fill(c)
+    question_text = font_style.render(question, True, white)
+    dis.blit(question_text, (10, 100))
+    option_rects = []
+    for i, option in enumerate(options):
+        option_rect = pygame.draw.rect(dis, red, [75 + i * 200, 250, 50, 50])
+        option_text = textTBD.render(option, True, white)
+        dis.blit(option_text, (90 + i * 200, 265))
+        option_rects.append(option_rect)
+    pygame.display.update()
+
+    # Check if the player clicked on an option
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            for i, option_rect in enumerate(option_rects):
+                if option_rect.collidepoint(event.pos):
+                    clicked = options[i]
+            if clicked == answer:
+                dis.fill(black)
+                mesg = textTBD.render("Well done", True, white)
+                dis.blit(mesg, (150, 200))
+                pygame.display.update()
+                time.sleep(1)
+                running = False
+            else:
+                dis.fill(black)
+                mesg = textTBD.render("Wrong answer! Try again.", True, white)
+                dis.blit(mesg, (100, 200))
+                pygame.display.update()
+                time.sleep(1)
+                clicked = ""
